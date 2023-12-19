@@ -1,41 +1,27 @@
-import {createSlice} from "@reduxjs/toolkit";
-import {fetchToDoApp} from "./toDoAppThunks";
+import {createSlice } from '@reduxjs/toolkit';
+import {Task} from "../../types";
+import {addTask, fetchTasks, removeTask} from "./toDoAppThunks";
 
-interface ToDoTask {
-  id: number;
-  title: string;
-  checkbox: boolean;
-}
-interface TodoAppState{
-  ToDoTask: ToDoTask [],
-  isLoading: boolean;
-  isError: boolean;
-}
-const initialState: TodoAppState = {
-  ToDoTask: [],
-  isLoading: false,
-  isError: false,
-};
 
-export const todoSlice = createSlice({
-  name: 'todoapp',
+const initialState: Task[] = [];
+
+export const tasksSlice = createSlice({
+  name: 'tasks',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchToDoApp.pending, (state) => {
-      state.isLoading = true;
-      state.isError = false;
-    });
-    builder.addCase(fetchToDoApp.fulfilled, (state, action) => {
-      state.ToDoTask = action.payload;
-      state.isLoading = false;
-    });
-    builder.addCase(fetchToDoApp.rejected, (state) => {
-      state.isLoading = false;
-      state.isError = true;
-    });
+    builder.addCase(fetchTasks.fulfilled, (state, action) => {
+        return action.payload;
+      });
+    builder.addCase(addTask.fulfilled, (state, action) => {
+        state.push(action.payload);
+      });
+    builder.addCase(removeTask.fulfilled, (state, action) => {
+        return state.filter((task) => task.id !== action.payload);
+      });
   },
 });
 
+export const tasksReducer = tasksSlice.reducer;
 
-export const toDoAppReducer = todoSlice.reducer;
+
